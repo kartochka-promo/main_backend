@@ -9,8 +9,16 @@ Backend репозиторий команды drop_table
 make coverage
 ```
 
+### Запуск dev сервера
+```
+make run-dev
+```
+
+
 ### Запуск проекта 
 
 ```
 make run
 ```
+
+
