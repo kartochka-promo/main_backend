@@ -4,7 +4,8 @@ SURVEY_BINARY=survey_service
 
 PROJECT_DIR := ${CURDIR}
 
-DOCKER_DIR := ${CURDIR}/docker
+DOCKER_PROD_DIR := ${CURDIR}/docker/production
+DOCKER_DEV_DIR := ${CURDIR}/docker/development
 
 ## build: Build compiles project
 build:
@@ -12,12 +13,19 @@ build:
 	go build -o ${STAFF_BINARY} cmd/staff_service/start.go
 	go build -o ${SURVEY_BINARY} cmd/survey_service/start.go
 
-## build-docker: Builds all docker containers
+## build-docker: Builds all docker containers for production
 build-docker:
-	docker build -t dependencies -f ${DOCKER_DIR}/builder.Dockerfile .
-	docker build -t main_service -f ${DOCKER_DIR}/main_service.Dockerfile .
-	docker build -t staff_service -f ${DOCKER_DIR}/staff.Dockerfile .
-	docker build -t survey_service -f ${DOCKER_DIR}/survey.Dockerfile .
+	docker build -t dependencies -f ${DOCKER_PROD_DIR}/builder.Dockerfile .
+	docker build -t main_service -f ${DOCKER_PROD_DIR}/main_service.Dockerfile .
+	docker build -t staff_service -f ${DOCKER_PROD_DIR}/staff.Dockerfile .
+	docker build -t survey_service -f ${DOCKER_PROD_DIR}/survey.Dockerfile .
+
+## build-docker-dev: Builds all docker containers for development
+build-docker-dev:
+	docker build -t dependencies_dev -f ${DOCKER_DEV_DIR}/init.Dockerfile .
+	docker build -t main_service_dev -f ${DOCKER_DEV_DIR}/main_service.Dockerfile .
+	docker build -t staff_service_dev -f ${DOCKER_DEV_DIR}/staff.Dockerfile .
+	docker build -t survey_service_dev -f ${DOCKER_DEV_DIR}/survey.Dockerfile .
 
 ## run-and-build: Build and run docker
 build-and-run: build-docker
@@ -26,11 +34,14 @@ build-and-run: build-docker
 ## run: Build and run docker with new changes
 run:
 	docker rm -vf $$(docker ps -a -q) || true
-	docker build -t dependencies -f ${DOCKER_DIR}/builder.Dockerfile .
-	docker build -t main_service -f ${DOCKER_DIR}/main_service.Dockerfile .
-	docker build -t staff_service -f ${DOCKER_DIR}/staff.Dockerfile .
-	docker build -t survey_service -f ${DOCKER_DIR}/survey.Dockerfile .
+	make build-docker
 	docker-compose up --build --no-deps
+
+## run-dev: Build and run docker with new changes in develop mode
+run-dev:
+	docker rm -vf $$(docker ps -a -q) || true
+	make build-docker-dev
+	docker-compose -f docker-compose-dev.yml up --build --no-deps
 
 ## test-coverage: get final code coverage
 coverage:
