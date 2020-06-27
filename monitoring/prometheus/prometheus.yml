@@ -26,18 +26,18 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ['0.0.0.0:8080']
         labels:
           group: 'main_server'
 
-      - targets: ['localhost:8084']
+      - targets: ['0.0.0.0:8084']
         labels:
           group: 'staff_server'
 
-      - targets: ['localhost:8086']
+      - targets: ['0.0.0.0:8086']
         labels:
           group: 'survey_server'
 
-      - targets: ['localhost:9100']
+      - targets: ['0.0.0.0:9100']
         labels:
           group: 'node_exporter'
