@@ -23,7 +23,7 @@ func NewLoggingMiddleware(metrics *metrics.PromMetrics) mux.MiddlewareFunc {
 			respTime := time.Since(reqTime)
 			if r.URL.Path != "/metrics" {
 				//If status is 500 => response will be in panic middleware
-				metrics.Hits.WithLabelValues(strconv.Itoa(http.StatusOK), r.URL.String(), r.Method).Inc()
+				metrics.Hits.WithLabelValues(strconv.Itoa(http.StatusOK), r.URL.Path, r.Method).Inc()
 				metrics.Timings.WithLabelValues(
 					strconv.Itoa(http.StatusOK), r.URL.String(), r.Method).Observe(respTime.Seconds())
 			}
