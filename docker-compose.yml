@@ -4,6 +4,11 @@ volumes:
   dbbackups:
   postgis-data:
   redis:
+  prometheus_data:
+
+networks:
+  monitor-net:
+    driver: bridge
 
 services:
   main_service:
