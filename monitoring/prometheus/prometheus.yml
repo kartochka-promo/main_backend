@@ -38,6 +38,6 @@ scrape_configs:
         labels:
           group: 'survey_service'
 
-      - targets: ['0.0.0.0:9100']
+      - targets: ['node_exporter:9100']
         labels:
           group: 'node_exporter'
