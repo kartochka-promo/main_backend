@@ -7,6 +7,7 @@ volumes:
   prometheus_data:
 
 #change ports to expose in microservices
+#change name of main_service to main
 services:
   main_service:
     image: main_service
