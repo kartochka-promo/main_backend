@@ -26,17 +26,17 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     static_configs:
-      - targets: ['0.0.0.0:8080']
+      - targets: ['main_service:8080']
         labels:
-          group: 'main_server'
+          group: 'main_service'
 
-      - targets: ['0.0.0.0:8084']
+      - targets: ['staff_service:8084']
         labels:
-          group: 'staff_server'
+          group: 'staff_service'
 
-      - targets: ['0.0.0.0:8086']
+      - targets: ['survey_service:8086']
         labels:
-          group: 'survey_server'
+          group: 'survey_service'
 
       - targets: ['0.0.0.0:9100']
         labels:
