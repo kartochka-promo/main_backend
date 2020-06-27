@@ -71,7 +71,7 @@ services:
       test: "exit 0"
 
   prometheus:
-    image: prom/prometheus:v2.1.0
+    image: prom/prometheus:latest
     volumes:
       - ./monitoring/prometheus:/etc/prometheus/
       - prometheus_data:/prometheus
@@ -82,4 +82,9 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
       - 9090:9090
-#    restart: always
+    restart: always
+
+  node-exporter:
+    image: prom/node-exporter
+    expose:
+      - 9100
