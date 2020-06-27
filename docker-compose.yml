@@ -92,7 +92,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     restart: unless-stopped
-    user: "104"
+    user: "472"
     volumes:
       - ./monitoring/grafana:/var/lib/grafana
     ports:
