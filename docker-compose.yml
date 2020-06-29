@@ -126,5 +126,6 @@ services:
     restart: always
     volumes:
       - ./monitoring/data/alertmanager-bot-telegram:/data
+      - ./monitoring/prometheus/:/configs
     depends_on:
       - alertmanager
