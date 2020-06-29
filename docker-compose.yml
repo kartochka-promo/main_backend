@@ -4,7 +4,6 @@ volumes:
   dbbackups:
   postgis-data:
   redis:
-  prometheus_data:
 
 #change ports to expose in microservices
 #change name of main_service to main
