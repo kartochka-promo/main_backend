@@ -2,6 +2,7 @@ package configs
 
 import (
 	"os"
+	"strings"
 	"time"
 )
 
@@ -45,6 +46,8 @@ const (
 	SessionStaffID sessionName = "session"
 )
 
+var IsDevServer bool
+
 func init() {
 	PostgresPreferences = postgresPreferencesStruct{
 		User:     os.Getenv("PostgresUser"),
@@ -66,5 +69,10 @@ func init() {
 		WriteTimeout:   15 * time.Second,
 		ReadTimeout:    15 * time.Second,
 		ContextTimeout: time.Second * 2,
+	}
+
+	IsDevServerStr := os.Getenv("IsDevServer")
+	if strings.ToLower(IsDevServerStr) == "true" {
+		IsDevServer = true
 	}
 }

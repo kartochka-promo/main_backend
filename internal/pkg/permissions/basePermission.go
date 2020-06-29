@@ -50,6 +50,11 @@ func SetCSRF(next http.HandlerFunc) http.HandlerFunc {
 func CheckCSRF(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
+			if configs.IsDevServer {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			csrf := r.Header.Get("X-Csrf-Token")
 			csrfCookie, err := r.Cookie("csrf")
 
@@ -60,5 +65,4 @@ func CheckCSRF(next http.HandlerFunc) http.HandlerFunc {
 			generateCsrfLogic(w)
 			next.ServeHTTP(w, r)
 		})
-
 }

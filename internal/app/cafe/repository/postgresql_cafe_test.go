@@ -224,7 +224,7 @@ func TestGetByOwnerID(t *testing.T) {
 		},
 		//Test not found
 		{
-			cafesArray: nil,
+			cafesArray: []cafeModels.Cafe{},
 			staffID:    0,
 			err:        sql.ErrNoRows,
 		},
