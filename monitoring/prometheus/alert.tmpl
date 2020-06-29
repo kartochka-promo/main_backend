@@ -1,6 +1,6 @@
 {{ define "telegram.default" }}
 {{ range .Alerts }}
-{{ if eq .Status "firing"}}🥴 <b>СЕРВЕР УПАЛ</b> 🥴{{ else }}<b>{{ .Status | toUpper }}</b>{{ end }}
+{{ if eq .Status "firing"}}🥴 <b>СЕРВЕР ЗАБОЛЕЛ</b> 🥴{{ else }}<b>{{ .Status | toUpper }}</b>{{ end }}
 <b>{{ .Labels.alertname }}</b>
 {{ if .Annotations.message }}
 {{ .Annotations.message }}

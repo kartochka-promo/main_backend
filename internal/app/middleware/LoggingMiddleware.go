@@ -54,7 +54,7 @@ func NewLoggingMiddleware(metrics *metrics.PromMetrics) mux.MiddlewareFunc {
 					metrics.Hits.WithLabelValues(strconv.Itoa(w2.response.Errors[0].Code), r.URL.Path, r.Method).Inc()
 				}
 				metrics.Timings.WithLabelValues(
-					strconv.Itoa(http.StatusOK), r.URL.String(), r.Method).Observe(respTime.Seconds())
+					strconv.Itoa(http.StatusOK), r.URL.Path, r.Method).Observe(respTime.Seconds())
 			}
 		})
 	}
