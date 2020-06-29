@@ -462,6 +462,7 @@ func TestApplePassKitUsecase_UpdatePass(t *testing.T) {
 
 	var customerObj CustomerModels.Customer
 	err = faker.FakeData(&customerObj)
+	cafeObj.StaffID = 5
 	assert.NoError(t, err)
 	customerObj.Type = Type
 	customerObj.SurveyResult = "{}"
