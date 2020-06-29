@@ -8,6 +8,7 @@ volumes:
 #change ports to expose in microservices
 #change name of main_service to main
 services:
+#  Microservices
   main_service:
     image: main_service
     ports:
@@ -46,7 +47,7 @@ services:
     depends_on:
       - redis
       - postgres
-
+# Databases
   redis:
     image: "redis:alpine"
     command: ["redis-server", "--appendonly", "yes"]
@@ -68,7 +69,7 @@ services:
     restart: on-failure
     healthcheck:
       test: "exit 0"
-
+# Monitoring
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -128,3 +129,16 @@ services:
       - ./monitoring/prometheus/:/configs
     depends_on:
       - alertmanager
+
+  redis_exporter:
+    image: oliver006/redis_exporter
+    command: -redis.addr redis://redis:6379
+    ports:
+      - "9121:9121"
+
+  postgres_exporter:
+    image: wrouesnel/postgres_exporter
+    env_file:
+      - envs/postgres_exporter.env
+    ports:
+    - "9187:9187"
