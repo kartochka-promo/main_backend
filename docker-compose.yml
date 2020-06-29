@@ -83,6 +83,7 @@ services:
     ports:
       - "9090:9090"
     restart: always
+    user: "0"
     depends_on:
       - alertmanager
 
