@@ -7,7 +7,7 @@ volumes:
 #change ports to expose in microservices
 #change name of main_service to main
 services:
-#  Microservices
+  #  Microservices
   main_service:
     image: main_service
     ports:
@@ -46,7 +46,7 @@ services:
     depends_on:
       - redis
       - postgres
-# Databases
+  # Databases
   redis:
     image: "redis:alpine"
     command: ["redis-server"]
@@ -70,7 +70,16 @@ services:
     restart: on-failure
     healthcheck:
       test: "exit 0"
-# Monitoring
+  # Mail
+  mail:
+    image: bytemark/smtp
+    restart: always
+    environment:
+      RELAY_HOST: smtp.s-soboy.com
+      RELAY_PORT: 587
+      RELAY_USERNAME: alice@example.com
+      RELAY_PASSWORD: secretpassword
+  # Monitoring
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -102,7 +111,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-        - prometheus
+      - prometheus
 
   alertmanager:
     image: prom/alertmanager
@@ -143,4 +152,4 @@ services:
     env_file:
       - envs/postgres_exporter.env
     ports:
-    - "9187:9187"
+      - "9187:9187"
