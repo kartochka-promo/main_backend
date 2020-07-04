@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"2020_1_drop_table/internal/pkg/metrics"
+	"2020_1_drop_table/internal/pkg/responses"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
@@ -25,7 +26,7 @@ func NewPanicMiddleware(metrics *metrics.PromMetrics) mux.MiddlewareFunc {
 						r.Method).Observe(respTime.Seconds())
 
 					log.Error().Msgf(fmt.Sprintf("panic catched: %s", err))
-					http.Error(w, "Internal server error", http.StatusInternalServerError)
+					responses.SendServerError("Internal server error", w)
 				}
 			}()
 			next.ServeHTTP(w, r)

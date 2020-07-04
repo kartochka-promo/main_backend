@@ -414,7 +414,7 @@ func TestApplePassKitHandler_GenerateNewPass(t *testing.T) {
 			err:               nil,
 			httpError:         true,
 			httpErrors: passHttpResponse{
-				Data: nil,
+				Data: []byte(nil),
 				Errors: []responses.HttpError{
 					{
 						Code:    400,
@@ -431,7 +431,7 @@ func TestApplePassKitHandler_GenerateNewPass(t *testing.T) {
 			err:               nil,
 			httpError:         true,
 			httpErrors: passHttpResponse{
-				Data: nil,
+				Data: []byte(nil),
 				Errors: []responses.HttpError{
 					{
 						Code:    400,
@@ -480,9 +480,9 @@ func TestApplePassKitHandler_GenerateNewPass(t *testing.T) {
 			assert.Equal(t, testCase.httpErrors, response, message)
 		} else {
 			headerValue := "attachment; filename=loyaltyCard.pkpass"
-			assert.Equal(t, resp.Header.Get("Content-Disposition"), headerValue)
-			assert.Equal(t, resp.Header.Get("Content-Type"), "application/vnd.apple.pkpass")
-			assert.Equal(t, body, testCase.response.Bytes())
+			assert.Equal(t, resp.Header.Get("Content-Disposition"), headerValue, message)
+			assert.Equal(t, resp.Header.Get("Content-Type"), "application/vnd.apple.pkpass", message)
+			assert.Equal(t, body, testCase.response.Bytes(), message)
 		}
 	}
 }

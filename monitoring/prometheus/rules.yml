@@ -1,0 +1,45 @@
+groups:
+  - name: AllInstances
+    rules:
+      # Detects if some node is down
+      - alert: InstanceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Контейнер {{ $labels.instance }} упал"
+          description: "{{ $labels.instance }} не отвечает {{ $labels.job }}'у больше 30 секунд."
+
+      # Detects if some microservice is sending too much 500 errs
+      - alert: APIServerErrorCritical
+        expr: increase(hits{status="500"}[1m])>5
+        labels:
+          severity: critical
+        annotations:
+          summary: "Контейнер {{ $labels.instance }} прислал слишком много 500"
+          description: "Контейнер {{ $labels.instance }} за последние 5 минут отправил более 5 ошибок 500"
+
+  - name: RedisInstance
+    rules:
+      # Detects if redis node is down
+      - alert: RedisInstanceDown
+        expr: redis_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Контейнер {{ $labels.instance }} упал"
+          description: "{{ $labels.instance }} не отвечает {{ $labels.job }}'у больше 30 секунд."
+
+  - name: PostgresInstance
+    rules:
+      # Detects if postgres node is down
+      - alert: PostgresInstanceDown
+        expr: pg_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Контейнер {{ $labels.instance }} упал"
+          description: "{{ $labels.instance }} не отвечает {{ $labels.job }}'у больше 30 секунд."

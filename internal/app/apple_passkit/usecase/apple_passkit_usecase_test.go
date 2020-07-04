@@ -244,7 +244,10 @@ func TestApplePassKitUsecase_GetImage(t *testing.T) {
 		imageData, err := passKitUsecase.GetImage(context.Background(),
 			testCase.imageName, testCase.cafeID,
 			testCase.Type, testCase.published)
-
+		//if len of image is 0 => image not found
+		if len(testCase.imageData) == 0 && testCase.err == nil {
+			testCase.err = globalModels.ErrNotFound
+		}
 		assert.Equal(t, testCase.err, err, message)
 		if err == nil {
 			assert.Equal(t, testCase.imageData, imageData, message)
@@ -462,6 +465,7 @@ func TestApplePassKitUsecase_UpdatePass(t *testing.T) {
 
 	var customerObj CustomerModels.Customer
 	err = faker.FakeData(&customerObj)
+	cafeObj.StaffID = 5
 	assert.NoError(t, err)
 	customerObj.Type = Type
 	customerObj.SurveyResult = "{}"

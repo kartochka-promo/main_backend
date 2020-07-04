@@ -59,7 +59,9 @@ test-html:
 
 ## run-background: run process in background(available after build)
 run-background:
-	docker-compose up -d
+	docker rm -vf $$(docker ps -a -q) || true
+	make build-docker
+	docker-compose up -d --build --no-deps
 
 .PHONY: help
 all: help

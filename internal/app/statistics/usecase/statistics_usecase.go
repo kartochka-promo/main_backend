@@ -33,7 +33,7 @@ func (s statisticsUsecase) GetWorkerData(ctx context.Context, staffID int, limit
 
 	//todo permissions check if staffId working on request user
 	if err != nil || !requestStaff.IsOwner {
-		message := "Request user not owner or not authorized"
+		message := "request user not owner or not authorized"
 		return nil, errors.New(message)
 	}
 
