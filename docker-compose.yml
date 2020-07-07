@@ -67,8 +67,8 @@ services:
   prometheus:
     image: prom/prometheus:latest
     volumes:
-      - ./monitoring/prometheus:/etc/prometheus/
-      - ./monitoring/data/prometheus:/prometheus
+      - ./docker/production/monitoring/prometheus:/etc/prometheus/
+      - ./docker/production/monitoring/data/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -91,7 +91,7 @@ services:
     restart: unless-stopped
     user: "0"
     volumes:
-      - ./monitoring/grafana:/var/lib/grafana
+      - ./docker/production/monitoring/grafana:/var/lib/grafana
     ports:
       - "3000:3000"
     depends_on:
@@ -100,8 +100,8 @@ services:
   alertmanager:
     image: prom/alertmanager
     volumes:
-      - ./monitoring/prometheus:/etc/prometheus
-      - ./monitoring/data/alertmanager:/data
+      - ./docker/production/monitoring/prometheus:/etc/prometheus
+      - ./docker/production/monitoring/data/alertmanager:/data
     command:
       - '--config.file=/etc/prometheus/alertmanager.yml'
       - '--storage.path=/data'
@@ -120,8 +120,8 @@ services:
       - "9095:9095"
     restart: always
     volumes:
-      - ./monitoring/data/alertmanager-bot-telegram:/data
-      - ./monitoring/prometheus/:/configs
+      - ./docker/production/monitoring/data/alertmanager-bot-telegram:/data
+      - ./docker/production/monitoring/prometheus/:/configs
     depends_on:
       - alertmanager
 
