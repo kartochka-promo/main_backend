@@ -131,7 +131,7 @@ CREATE INDEX stat_idx on statistics_table (cafeId, time);
 
 CREATE TABLE IF NOT EXISTS EmailTemplate
 (
-    TemplateName Varchar(20),
+    TemplateName Varchar(20) PRIMARY KEY,
     MailTitle    Varchar(43),
     MailContent  Text
 )
