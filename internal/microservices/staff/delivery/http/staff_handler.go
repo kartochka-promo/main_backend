@@ -31,7 +31,7 @@ func NewStaffHandler(r *mux.Router, us staff.Usecase) {
 	r.HandleFunc("/api/v1/staff",
 		permissions.SetCSRF(handler.RegisterHandler)).Methods("POST")
 
-	r.HandleFunc("/api/v1/get_current_staff/",
+	r.HandleFunc("/api/v1/staff/get_current_staff/",
 		permissions.SetCSRF(handler.GetCurrentStaffHandler)).Methods("GET")
 
 	r.HandleFunc("/api/v1/staff/{id:[0-9]+}",
@@ -43,7 +43,7 @@ func NewStaffHandler(r *mux.Router, us staff.Usecase) {
 	r.HandleFunc("/api/v1/staff/generateQr/{id:[0-9]+}",
 		permissions.SetCSRF(handler.GenerateQrHandler)).Methods("GET")
 
-	r.HandleFunc("/api/v1/add_staff",
+	r.HandleFunc("/api/v1/staff/add_staff",
 		permissions.SetCSRF(handler.AddStaffHandler)).Methods("POST")
 
 	r.HandleFunc("/api/v1/staff/get_staff_list/{id:[0-9]+}",
