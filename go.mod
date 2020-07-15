@@ -13,6 +13,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/sessions v1.2.0
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/k3a/html2text v0.0.0-20191003111652-62431c4a3ba5
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
@@ -21,6 +22,8 @@ require (
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 	github.com/prometheus/client_golang v1.6.0
 	github.com/rs/zerolog v1.18.0
+	github.com/sendgrid/rest v2.6.0+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.6.0+incompatible
 	github.com/skip2/go-qrcode v0.0.0-20191027152451-9434209cb086
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20200406173513-056763e48d71

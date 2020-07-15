@@ -12,6 +12,7 @@ build:
 	go build -o ${MAIN_SERVICE_BINARY} cmd/main_service/start.go
 	go build -o ${STAFF_BINARY} cmd/staff_service/start.go
 	go build -o ${SURVEY_BINARY} cmd/survey_service/start.go
+	go build -o ${SURVEY_BINARY} cmd/mail_service/start.go
 
 ## build-docker: Builds all docker containers for production
 build-docker:
@@ -19,6 +20,7 @@ build-docker:
 	docker build -t main_service -f ${DOCKER_PROD_DIR}/main_service.Dockerfile .
 	docker build -t staff_service -f ${DOCKER_PROD_DIR}/staff.Dockerfile .
 	docker build -t survey_service -f ${DOCKER_PROD_DIR}/survey.Dockerfile .
+	docker build -t mail_service -f ${DOCKER_PROD_DIR}/mail.Dockerfile .
 
 ## build-docker-dev: Builds all docker containers for development
 build-docker-dev:
@@ -26,6 +28,7 @@ build-docker-dev:
 	docker build -t main_service_dev -f ${DOCKER_DEV_DIR}/main_service.Dockerfile .
 	docker build -t staff_service_dev -f ${DOCKER_DEV_DIR}/staff.Dockerfile .
 	docker build -t survey_service_dev -f ${DOCKER_DEV_DIR}/survey.Dockerfile .
+	docker build -t mail_service_dev -f ${DOCKER_DEV_DIR}/mail.Dockerfile .
 
 ## run-and-build: Build and run docker
 build-and-run: build-docker

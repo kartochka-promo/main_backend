@@ -45,6 +45,18 @@ services:
       - redis
       - postgres
 
+  mail:
+    image: mail_service_dev
+    env_file:
+      - envs/golang.env
+    ports:
+      - "8087:8087"
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+      - postgres
+
   redis:
     image: "redis:alpine"
     command: ["redis-server", "--appendonly", "yes"]

@@ -1,0 +1,19 @@
+//protoc --go_out=plugins=grpc:. *.proto
+syntax = "proto3";
+package mail;
+option go_package = ".;mail";
+
+
+service MailGRPC{
+  rpc SendEmail(EmailParams) returns (Empty);
+}
+
+message EmailParams{
+  string Recipient = 1;
+  string TemplateName = 2;
+  map<string, string> EmailContext = 3;
+}
+
+message Empty {
+
+}

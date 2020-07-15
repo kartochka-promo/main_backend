@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"2020_1_drop_table/configs"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
 func AddOptionsRequest(r *mux.Router) {
 	r.Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", configs.FrontEndUrl)
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length,"+
 			" Accept-Encoding, X-CSRF-Token, Authorization, Access-Control-Request-Headers,"+

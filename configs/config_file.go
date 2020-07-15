@@ -27,6 +27,7 @@ const GRPCStaffUrl = "staff:8083"
 const HTTPSurveyUrl = "0.0.0.0:8086"
 const GRPCCafeUrl = "main_service:8085"
 const GRPCCustomerUrl = "0.0.0.0:8082"
+const GRPCEmailUrl = "0.0.0.0:8087"
 
 var ApplePassword = os.Getenv("ApplePassword")
 
@@ -68,7 +69,7 @@ func init() {
 	Timeouts = timeouts{
 		WriteTimeout:   15 * time.Second,
 		ReadTimeout:    15 * time.Second,
-		ContextTimeout: time.Second * 2,
+		ContextTimeout: 2 * time.Second,
 	}
 
 	IsDevServerStr := os.Getenv("IsDevServer")
