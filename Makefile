@@ -1,6 +1,7 @@
 MAIN_SERVICE_BINARY=main_service
 STAFF_BINARY=staff_service
 SURVEY_BINARY=survey_service
+MAIL_BINARY=mail_service
 
 PROJECT_DIR := ${CURDIR}
 
@@ -12,7 +13,7 @@ build:
 	go build -o ${MAIN_SERVICE_BINARY} cmd/main_service/start.go
 	go build -o ${STAFF_BINARY} cmd/staff_service/start.go
 	go build -o ${SURVEY_BINARY} cmd/survey_service/start.go
-	go build -o ${SURVEY_BINARY} cmd/mail_service/start.go
+	go build -o ${MAIL_BINARY} cmd/mail_service/start.go
 
 ## build-docker: Builds all docker containers for production
 build-docker:

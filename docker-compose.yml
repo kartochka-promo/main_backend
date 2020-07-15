@@ -46,6 +46,19 @@ services:
     depends_on:
       - redis
       - postgres
+
+  mail:
+    image: mail_service
+    env_file:
+      - envs/golang.env
+    ports:
+      - "8087:8087"
+    volumes:
+      - $PWD/media:/app/media
+    depends_on:
+      - redis
+      - postgres
+
   # Databases
   redis:
     image: 'bitnami/redis:latest'
