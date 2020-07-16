@@ -5,6 +5,7 @@ import (
 	"2020_1_drop_table/internal/app"
 	cafeClient "2020_1_drop_table/internal/app/cafe/delivery/grpc/client"
 	globalModels "2020_1_drop_table/internal/app/models"
+	mailClientGRPC "2020_1_drop_table/internal/microservices/mail/delivery/grpc/client"
 	"2020_1_drop_table/internal/microservices/staff"
 	"2020_1_drop_table/internal/microservices/staff/models"
 	"2020_1_drop_table/internal/pkg/hasher"
@@ -24,14 +25,17 @@ import (
 type staffUsecase struct {
 	staffRepo      staff.Repository
 	cafeClient     cafeClient.CafeGRPCClientInterface
+	mailClient     mailClientGRPC.MailClient
 	contextTimeout time.Duration
 }
 
-func NewStaffUsecase(s staff.Repository, cafeClient cafeClient.CafeGRPCClientInterface, timeout time.Duration) staff.Usecase {
+func NewStaffUsecase(s staff.Repository, cafeClient cafeClient.CafeGRPCClientInterface,
+	mailClient mailClientGRPC.MailClient, timeout time.Duration) staff.Usecase {
 	return &staffUsecase{
 		staffRepo:      s,
-		contextTimeout: timeout,
 		cafeClient:     cafeClient,
+		mailClient:     mailClient,
+		contextTimeout: timeout,
 	}
 }
 
@@ -288,6 +292,7 @@ func (s *staffUsecase) DeleteStaffById(ctx context.Context, staffId int) error {
 func (s *staffUsecase) UpdatePosition(ctx context.Context, staffId int, newPosition string) error {
 	ctx, cancel := context.WithTimeout(ctx, s.contextTimeout)
 	defer cancel()
+
 	requestUser, err := s.GetFromSession(ctx)
 	if err != nil {
 		return globalModels.ErrForbidden
@@ -297,5 +302,24 @@ func (s *staffUsecase) UpdatePosition(ctx context.Context, staffId int, newPosit
 		return globalModels.ErrForbidden
 	}
 	err = s.staffRepo.UpdatePosition(ctx, staffId, newPosition)
+	return err
+}
+
+func (s *staffUsecase) SendEmailToConfirm(ctx context.Context, email string) error {
+	ctx, cancel := context.WithTimeout(ctx, s.contextTimeout)
+	defer cancel()
+
+	confirmModel, err := s.staffRepo.AddEmailToConfirm(ctx, email)
+	if err != nil {
+		return err
+	}
+
+	templateName := "registration"
+	emailContext := map[string]string{
+		"secret_key": confirmModel.SecretKey,
+	}
+
+	err = s.mailClient.SendEmail(ctx, confirmModel.Email, templateName, emailContext)
+
 	return err
 }

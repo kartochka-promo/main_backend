@@ -35,6 +35,27 @@ func (_m *Repository) Add(ctx context.Context, st models.Staff) (models.Staff, e
 	return r0, r1
 }
 
+// SendEmailToConfirm provides a mock function with given fields: ctx, email
+func (_m *Repository) AddEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error) {
+	ret := _m.Called(ctx, email)
+
+	var r0 models.EmailConfirmationForm
+	if rf, ok := ret.Get(0).(func(context.Context, string) models.EmailConfirmationForm); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Get(0).(models.EmailConfirmationForm)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // AddUuid provides a mock function with given fields: ctx, uuid, id
 func (_m *Repository) AddUuid(ctx context.Context, uuid string, id int) error {
 	ret := _m.Called(ctx, uuid, id)
@@ -63,6 +84,27 @@ func (_m *Repository) CheckIsOwner(ctx context.Context, staffId int) (bool, erro
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
 		r1 = rf(ctx, staffId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteEmailToConfirm provides a mock function with given fields: ctx, email
+func (_m *Repository) DeleteEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error) {
+	ret := _m.Called(ctx, email)
+
+	var r0 models.EmailConfirmationForm
+	if rf, ok := ret.Get(0).(func(context.Context, string) models.EmailConfirmationForm); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Get(0).(models.EmailConfirmationForm)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -154,6 +196,27 @@ func (_m *Repository) GetCafeId(ctx context.Context, uuid string) (int, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(ctx, uuid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetEmailToConfirm provides a mock function with given fields: ctx, email
+func (_m *Repository) GetEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error) {
+	ret := _m.Called(ctx, email)
+
+	var r0 models.EmailConfirmationForm
+	if rf, ok := ret.Get(0).(func(context.Context, string) models.EmailConfirmationForm); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Get(0).(models.EmailConfirmationForm)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
 	} else {
 		r1 = ret.Error(1)
 	}

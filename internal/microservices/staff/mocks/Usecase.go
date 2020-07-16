@@ -35,6 +35,20 @@ func (_m *Usecase) Add(c context.Context, newStaff models.Staff) (models.SafeSta
 	return r0, r1
 }
 
+// SendEmailToConfirm provides a mock function with given fields: ctx, email
+func (_m *Usecase) SendEmailToConfirm(ctx context.Context, email string) error {
+	ret := _m.Called(ctx, email)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // CheckIfStaffInOwnerCafes provides a mock function with given fields: ctx, requestUser, staffId
 func (_m *Usecase) CheckIfStaffInOwnerCafes(ctx context.Context, requestUser models.SafeStaff, staffId int) (bool, error) {
 	ret := _m.Called(ctx, requestUser, staffId)

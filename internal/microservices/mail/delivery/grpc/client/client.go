@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	mailProto "2020_1_drop_table/internal/microservices/mail/delivery/grpc/proto"
@@ -10,9 +10,9 @@ type MailClient struct {
 	client mailProto.MailGRPCClient
 }
 
-func NewMailClient(conn *grpc.ClientConn) *MailClient {
+func NewMailClient(conn *grpc.ClientConn) MailClient {
 	c := mailProto.NewMailGRPCClient(conn)
-	return &MailClient{
+	return MailClient{
 		client: c,
 	}
 }

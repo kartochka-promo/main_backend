@@ -4,6 +4,7 @@ import (
 	"2020_1_drop_table/configs"
 	cafeClient "2020_1_drop_table/internal/app/cafe/delivery/grpc/client"
 	"2020_1_drop_table/internal/app/middleware"
+	mailClientGRPC "2020_1_drop_table/internal/microservices/mail/delivery/grpc/client"
 	grpcServer "2020_1_drop_table/internal/microservices/staff/delivery/grpc/grpc_server"
 	staffHandler "2020_1_drop_table/internal/microservices/staff/delivery/http"
 	_staffRepo "2020_1_drop_table/internal/microservices/staff/repository"
@@ -56,8 +57,15 @@ func main() {
 	}
 	grpcCafeClient := cafeClient.NewCafeClient(grpcCafeConn)
 
+	grpcMailConn, err := grpc.Dial(configs.GRPCEmailUrl, grpc.WithInsecure())
+	if err != nil {
+		log.Error().Msgf(err.Error())
+		return
+	}
+	grpcMailClient := mailClientGRPC.NewMailClient(grpcMailConn)
+
 	staffRepo := _staffRepo.NewPostgresStaffRepository(conn)
-	staffUsecase := _staffUsecase.NewStaffUsecase(&staffRepo, grpcCafeClient, timeoutContext)
+	staffUsecase := _staffUsecase.NewStaffUsecase(&staffRepo, grpcCafeClient, grpcMailClient, timeoutContext)
 
 	go grpcServer.StartStaffGrpcServer(staffUsecase, configs.GRPCStaffUrl)
 	staffHandler.NewStaffHandler(r, staffUsecase)

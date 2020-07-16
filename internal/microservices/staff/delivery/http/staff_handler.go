@@ -57,6 +57,8 @@ func NewStaffHandler(r *mux.Router, us staff.Usecase) {
 
 	r.HandleFunc("/api/v1/staff/login", permissions.SetCSRF(handler.LoginHandler)).Methods("POST")
 	r.HandleFunc("/api/v1/staff/logout", handler.Logout).Methods("POST")
+
+	r.HandleFunc("/api/v1/staff/new_email", handler.AddEmailToConfirm).Methods("POST")
 }
 
 func (s *StaffHandler) fetchStaff(r *http.Request) (models.Staff, error) {
@@ -314,6 +316,7 @@ func fetchPosition(r *http.Request) (string, error) {
 	}
 	return position.Position, nil
 }
+
 func (s *StaffHandler) UpdatePosition(w http.ResponseWriter, r *http.Request) {
 	staffID, err := strconv.Atoi(mux.Vars(r)["id"])
 	newPosition, fetchErr := fetchPosition(r)
@@ -349,6 +352,39 @@ func (s *StaffHandler) Logout(w http.ResponseWriter, _ *http.Request) {
 		HttpOnly: true,
 	}
 	http.SetCookie(w, csrfCookie)
+
+	responses.SendOKAnswer("", w)
+}
+
+func fetchEmail(r *http.Request) (string, error) {
+	type email struct {
+		Email string `json:"email"`
+	}
+	data, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil || len(data) == 0 {
+		return "", err
+	}
+	var mail email
+	err = json.Unmarshal(data, &mail)
+	if err != nil {
+		return "", err
+	}
+	return mail.Email, nil
+}
+
+func (s *StaffHandler) AddEmailToConfirm(w http.ResponseWriter, r *http.Request) {
+	email, err := fetchEmail(r)
+	if err != nil {
+		responses.SendSingleError(err.Error(), w)
+		return
+	}
+
+	err = s.SUsecase.SendEmailToConfirm(r.Context(), email)
+	if err != nil {
+		responses.SendSingleError(err.Error(), w)
+		return
+	}
 
 	responses.SendOKAnswer("", w)
 }

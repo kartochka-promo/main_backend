@@ -44,7 +44,7 @@ func main() {
 		}),
 	)
 	mailGRPCServer.NewMailServerGRPC(server, mailUsecase)
-	log.Printf("GRPC mail server started at %s", configs.GRPCEmailUrl)
+	log.Info().Msgf("GRPC mail server started at %s", configs.GRPCEmailUrl)
 	err = server.Serve(list)
 	if err != nil {
 		log.Error().Msgf(err.Error())

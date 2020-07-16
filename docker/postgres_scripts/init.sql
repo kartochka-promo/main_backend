@@ -134,4 +134,11 @@ CREATE TABLE IF NOT EXISTS EmailTemplate
     TemplateName Varchar(20) PRIMARY KEY,
     MailTitle    Varchar(43),
     MailContent  Text
+);
+
+CREATE TABLE IF NOT EXISTS EmailConfirmation
+(
+    SecretKey      uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    Email          text UNIQUE,
+    DateOfCreation timestamp        DEFAULT current_timestamp
 )

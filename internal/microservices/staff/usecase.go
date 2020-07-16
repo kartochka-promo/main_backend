@@ -20,4 +20,5 @@ type Usecase interface {
 	DeleteStaffById(ctx context.Context, staffId int) error
 	CheckIfStaffInOwnerCafes(ctx context.Context, requestUser models.SafeStaff, staffId int) (bool, error)
 	UpdatePosition(ctx context.Context, id int, position string) error
+	SendEmailToConfirm(ctx context.Context, email string) error
 }

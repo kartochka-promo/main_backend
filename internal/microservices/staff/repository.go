@@ -17,4 +17,7 @@ type Repository interface {
 	GetStaffListByOwnerId(ctx context.Context, ownerId int) (map[string][]models.StaffByOwnerResponse, error)
 	DeleteStaff(ctx context.Context, staffId int) error
 	UpdatePosition(ctx context.Context, staffId int, newPosition string) error
+	AddEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error)
+	DeleteEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error)
+	GetEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error)
 }

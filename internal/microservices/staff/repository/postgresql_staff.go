@@ -5,6 +5,7 @@ import (
 	"2020_1_drop_table/internal/pkg/hasher"
 	"context"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
@@ -105,6 +106,19 @@ func (p *PostgresStaffRepository) GetCafeId(ctx context.Context, uuid string) (i
 	return id, err
 }
 
+func addCafeToList(staffList []models.StaffByOwnerResponse) map[string][]models.StaffByOwnerResponse {
+	result := make(map[string][]models.StaffByOwnerResponse)
+	for _, staff := range staffList {
+		key := staff.CafeId + "," + staff.CafeName
+		if staff.StaffId == nil {
+			result[key] = nil
+			continue
+		}
+		result[key] = append(result[key], staff)
+	}
+	return result
+}
+
 func (p *PostgresStaffRepository) GetStaffListByOwnerId(ctx context.Context, ownerId int) (map[string][]models.StaffByOwnerResponse, error) {
 	var data []models.StaffByOwnerResponse
 	query := `SELECT 
@@ -136,15 +150,42 @@ func (p *PostgresStaffRepository) UpdatePosition(ctx context.Context, staffId in
 	return err
 }
 
-func addCafeToList(staffList []models.StaffByOwnerResponse) map[string][]models.StaffByOwnerResponse {
-	result := make(map[string][]models.StaffByOwnerResponse)
-	for _, staff := range staffList {
-		key := staff.CafeId + "," + staff.CafeName
-		if staff.StaffId == nil {
-			result[key] = nil
-			continue
-		}
-		result[key] = append(result[key], staff)
+func (p *PostgresStaffRepository) AddEmailToConfirm(ctx context.Context,
+	email string) (models.EmailConfirmationForm, error) {
+
+	query := `INSERT INTO EmailConfirmation(Email) VALUES ($1) RETURNING SecretKey, Email, DateOfCreation`
+
+	var emailConfirmationForm models.EmailConfirmationForm
+
+	err := p.conn.GetContext(ctx, &emailConfirmationForm, query, email)
+	// Check if email is already in database
+	if errPQ, ok := err.(*pq.Error); ok && errPQ.Code.Name() == "unique_violation" {
+		emailConfirmationForm, err = p.GetEmailToConfirm(ctx, email)
 	}
-	return result
+
+	return emailConfirmationForm, err
+}
+
+func (p *PostgresStaffRepository) GetEmailToConfirm(ctx context.Context,
+	email string) (models.EmailConfirmationForm, error) {
+
+	query := `SELECT SecretKey, Email, DateOfCreation FROM EmailConfirmation WHERE Email=$1`
+
+	var emailConfirmationForm models.EmailConfirmationForm
+
+	err := p.conn.GetContext(ctx, &emailConfirmationForm, query, email)
+
+	return emailConfirmationForm, err
+}
+
+func (p *PostgresStaffRepository) DeleteEmailToConfirm(ctx context.Context,
+	email string) (models.EmailConfirmationForm, error) {
+
+	query := `DELETE FROM EmailConfirmation where Email=$1`
+
+	var emailConfirmationForm models.EmailConfirmationForm
+
+	_, err := p.conn.ExecContext(ctx, query, email)
+
+	return emailConfirmationForm, err
 }
