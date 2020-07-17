@@ -21,6 +21,6 @@ type CreateOrUpdateAdmin struct {
 }
 
 type LogAdmin struct {
-	Username       string `json:"user" db:"username"`
-	Password       string `json:"password"`
+	Username string `json:"user" db:"username"`
+	Password string `json:"password"`
 }

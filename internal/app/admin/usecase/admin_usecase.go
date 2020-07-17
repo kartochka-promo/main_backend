@@ -7,7 +7,7 @@ import (
 )
 
 type AdminLogic struct {
-	adminStorage interfaces.Repository
+	adminStorage interfaces.RepositoryAdmin
 }
 
 func (al *AdminLogic) hashPassword(currentPassword string) (string, error) {
@@ -18,8 +18,7 @@ func (al *AdminLogic) CreateAdmin(createAdminRequest *models.CreateOrUpdateAdmin
 	var (
 		err error
 	)
-	if createAdminRequest.HashedPassword, err = al.hashPassword(createAdminRequest.Password);
-		err != nil {
+	if createAdminRequest.HashedPassword, err = al.hashPassword(createAdminRequest.Password); err != nil {
 		return err
 	}
 	return al.adminStorage.CreateAdmin(createAdminRequest)

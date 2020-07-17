@@ -1,52 +1,70 @@
 package delivery
 
 import (
-	"net/http"
-
-	"github.com/labstack/echo/v4"
-
 	interfaces "2020_1_drop_table/internal/app/admin"
-	models "2020_1_drop_table/internal/app/admin/models"
-	responses "2020_1_drop_table/internal/pkg/responses"
+	"2020_1_drop_table/internal/app/admin/models"
+	"2020_1_drop_table/internal/pkg/responses"
+	"net/http"
+	"time"
+
+	//"2020_1_drop_table/internal/app/admin/models"
+	sessionInterfaces "2020_1_drop_table/internal/app/admin_session"
+	//"2020_1_drop_table/internal/pkg/responses"
+	"github.com/labstack/echo"
+	//"net/http"
+	//"time"
 )
 
-type AdminService struct {
-	adminLogic interfaces.UseCase
+type AdminMainService struct {
+	adminLogic   interfaces.UseCaseAdmin
+	sessionLogic sessionInterfaces.UseCase
 }
 
-func (as AdminService) CreateAdmin(rwContext echo.Context) error {
+func (ams AdminMainService) CreateAdmin(rwContext echo.Context) error {
 	var (
 		err             error
 		createAdminJson = new(models.CreateOrUpdateAdmin)
+		cookieValue     string
 	)
-	err = rwContext.Bind(&createAdminJson)
 
-	if err != nil {
+	if err = rwContext.Bind(&createAdminJson); err != nil {
 		return rwContext.NoContent(http.StatusNotAcceptable)
 	}
 
-	if err = as.adminLogic.CreateAdmin(createAdminJson); err != nil {
+	if err = ams.adminLogic.CreateAdmin(createAdminJson); err != nil {
 		return rwContext.JSON(http.StatusConflict, &responses.HttpError{
 			Code:    http.StatusConflict,
 			Message: err.Error(),
 		})
 	}
-	// todo : add token from reddis
+
+	if cookieValue, err = ams.sessionLogic.CreateSession(createAdminJson.Username); err != nil {
+		return rwContext.JSON(http.StatusExpectationFailed, &responses.HttpError{
+			Code:    http.StatusExpectationFailed,
+			Message: err.Error(),
+		})
+	}
+	rwContext.SetCookie(&http.Cookie{
+		Path:    "/admin",
+		Name:    "cookie_value",
+		Value:   cookieValue,
+		Expires: time.Now().Add(24 * time.Hour),
+	})
 	return rwContext.NoContent(http.StatusOK)
 }
 
-func (as AdminService) Authentication(rwContext echo.Context) error {
+func (ams AdminMainService) Authentication(rwContext echo.Context) error {
 	var (
 		err           error
 		authAdminJson = new(models.LogAdmin)
+		cookieValue   string
 	)
-	err = rwContext.Bind(&authAdminJson)
 
-	if err != nil {
+	if err = rwContext.Bind(&authAdminJson); err != nil {
 		return rwContext.NoContent(http.StatusNotAcceptable)
 	}
 
-	if flag, err := as.adminLogic.Authentication(authAdminJson); !flag || err != nil {
+	if flag, err := ams.adminLogic.Authentication(authAdminJson); !flag || err != nil {
 		responseMessage := "Password are not equal"
 		if err != nil {
 			responseMessage = err.Error()
@@ -56,22 +74,33 @@ func (as AdminService) Authentication(rwContext echo.Context) error {
 			Message: responseMessage,
 		})
 	}
-	// todo : add token from redis
+
+	if cookieValue, err = ams.sessionLogic.CreateSession(authAdminJson.Username); err != nil {
+		return rwContext.JSON(http.StatusExpectationFailed, &responses.HttpError{
+			Code:    http.StatusExpectationFailed,
+			Message: err.Error(),
+		})
+	}
+	rwContext.SetCookie(&http.Cookie{
+		Path:    "/admin",
+		Name:    "cookie_value",
+		Value:   cookieValue,
+		Expires: time.Now().Add(24 * time.Hour),
+	})
 	return rwContext.NoContent(http.StatusOK)
 }
 
-func (as AdminService) UpdateAdmin(rwContext echo.Context) error {
+func (ams AdminMainService) UpdateAdmin(rwContext echo.Context) error {
 	var (
 		err             error
 		updateAdminJson = new(models.CreateOrUpdateAdmin)
 	)
-	err = rwContext.Bind(&updateAdminJson)
-
-	if err != nil {
+	updateAdminJson.Username = rwContext.Get("username").(string)
+	if err = rwContext.Bind(&updateAdminJson); err != nil {
 		return rwContext.NoContent(http.StatusNotAcceptable)
 	}
 
-	if err = as.adminLogic.UpdateAdmin(updateAdminJson); err != nil {
+	if err = ams.adminLogic.UpdateAdmin(updateAdminJson); err != nil {
 		return rwContext.JSON(http.StatusConflict, &responses.HttpError{
 			Code:    http.StatusConflict,
 			Message: err.Error(),
@@ -80,12 +109,28 @@ func (as AdminService) UpdateAdmin(rwContext echo.Context) error {
 	return rwContext.NoContent(http.StatusOK)
 }
 
-func (as AdminService) Logout(rwContext echo.Context) error {
-	// todo : delete token from redis
+func (ams AdminMainService) Logout(rwContext echo.Context) error {
+	var (
+		cookieValue *http.Cookie
+		err         error
+	)
+
+	if cookieValue, err = rwContext.Cookie("cookie_value"); err != nil {
+		return rwContext.JSON(http.StatusExpectationFailed, &responses.HttpError{
+			Code:    http.StatusExpectationFailed,
+			Message: err.Error(),
+		})
+	}
+
+	if err = ams.sessionLogic.DeleteSession(cookieValue.Value); err != nil {
+		return rwContext.JSON(http.StatusConflict, &responses.HttpError{
+			Code:    http.StatusConflict,
+			Message: err.Error(),
+		})
+	}
 	return rwContext.NoContent(http.StatusOK)
 }
 
-
-func NewAdminService(adminLogic interfaces.UseCase) *AdminService {
-	return &AdminService{adminLogic: adminLogic}
+func NewAdminMainService(adminLogic interfaces.UseCaseAdmin) *AdminMainService {
+	return &AdminMainService{adminLogic: adminLogic}
 }

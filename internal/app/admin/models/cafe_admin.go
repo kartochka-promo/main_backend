@@ -17,11 +17,9 @@ type GetCafe struct {
 type GetCafes struct {
 	Cafes []GetCafe `json:"cafes"`
 }
-type DeleteCafe struct {
-	CafeID int `json:"id"`
-}
 
 type CreateOrUpdateCafe struct {
+	CafeID      int       `json:"id"`
 	CafeName    string    `json:"name"`
 	Address     string    `json:"address"`
 	Description string    `json:"description"`
