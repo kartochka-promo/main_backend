@@ -39,10 +39,29 @@ func NewStaffUsecase(s staff.Repository, cafeClient cafeClient.CafeGRPCClientInt
 	}
 }
 
-func (s *staffUsecase) Add(c context.Context, newStaff models.Staff) (models.SafeStaff, error) {
+func (s *staffUsecase) Register(c context.Context, newStaff models.Staff,
+	emailSecretKey string) (models.SafeStaff, error) {
+
 	ctx, cancel := context.WithTimeout(c, s.contextTimeout)
 	defer cancel()
 
+	emailConfirmed := s.confirmEmail(ctx, newStaff.Email, emailSecretKey)
+	newStaff.EmailConfirmed = emailConfirmed
+
+	if !emailConfirmed {
+		_ = s.SendEmailToConfirm(ctx, newStaff.Email)
+	}
+
+	safeStaff, err := s.add(ctx, newStaff)
+	if err != nil {
+		return models.SafeStaff{}, err
+	}
+
+	_, _ = s.staffRepo.DeleteEmailToConfirm(ctx, newStaff.Email)
+	return safeStaff, nil
+}
+
+func (s *staffUsecase) add(ctx context.Context, newStaff models.Staff) (models.SafeStaff, error) {
 	newStaff.EditedAt = time.Now()
 
 	validation := validator.New()
@@ -66,7 +85,19 @@ func (s *staffUsecase) Add(c context.Context, newStaff models.Staff) (models.Saf
 		return models.SafeStaff{}, err
 	}
 
+	_, _ = s.staffRepo.DeleteEmailToConfirm(ctx, newStaff.Email)
+
 	return app.GetSafeStaff(newStaff), nil
+}
+
+func (s *staffUsecase) confirmEmail(ctx context.Context, email, secretKey string) bool {
+	if email == "" || secretKey == "" {
+		return false
+	}
+
+	emailConfirmForm, err := s.staffRepo.GetEmailToConfirm(ctx, email)
+
+	return err != nil || emailConfirmForm.SecretKey != secretKey
 }
 
 func (s *staffUsecase) GetByID(c context.Context, id int) (models.SafeStaff, error) {
@@ -305,11 +336,11 @@ func (s *staffUsecase) UpdatePosition(ctx context.Context, staffId int, newPosit
 	return err
 }
 
-func (s *staffUsecase) SendEmailToConfirm(ctx context.Context, email string) error {
+func (s *staffUsecase) SendRegisterEmail(ctx context.Context, email string) error {
 	ctx, cancel := context.WithTimeout(ctx, s.contextTimeout)
 	defer cancel()
 
-	confirmModel, err := s.staffRepo.AddEmailToConfirm(ctx, email)
+	confirmModel, err := s.staffRepo.AddEmailToConfirm(ctx, email, false)
 	if err != nil {
 		return err
 	}
@@ -322,4 +353,40 @@ func (s *staffUsecase) SendEmailToConfirm(ctx context.Context, email string) err
 	err = s.mailClient.SendEmail(ctx, confirmModel.Email, templateName, emailContext)
 
 	return err
+}
+
+func (s *staffUsecase) SendEmailToConfirm(ctx context.Context, email string) error {
+	ctx, cancel := context.WithTimeout(ctx, s.contextTimeout)
+	defer cancel()
+
+	confirmModel, err := s.staffRepo.AddEmailToConfirm(ctx, email, true)
+	if err != nil {
+		return err
+	}
+
+	templateName := "confirm"
+	emailContext := map[string]string{
+		"secret_key": confirmModel.SecretKey,
+	}
+
+	err = s.mailClient.SendEmail(ctx, confirmModel.Email, templateName, emailContext)
+
+	return err
+}
+
+func (s *staffUsecase) ConfirmEmailToStaff(ctx context.Context, email, secretKey string) error {
+	ctx, cancel := context.WithTimeout(ctx, s.contextTimeout)
+	defer cancel()
+
+	confirmed := s.confirmEmail(ctx, email, secretKey)
+	if !confirmed {
+		return globalModels.ErrNoEmailInDatabase
+	}
+
+	err := s.staffRepo.ConfirmEmail(ctx, email)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -35,7 +35,7 @@ func (_m *Usecase) Add(c context.Context, newStaff models.Staff) (models.SafeSta
 	return r0, r1
 }
 
-// SendEmailToConfirm provides a mock function with given fields: ctx, email
+// SendRegisterEmail provides a mock function with given fields: ctx, email
 func (_m *Usecase) SendEmailToConfirm(ctx context.Context, email string) error {
 	ret := _m.Called(ctx, email)
 

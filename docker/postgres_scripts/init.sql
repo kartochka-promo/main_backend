@@ -28,15 +28,16 @@ CREATE INDEX if not exists cafe_location_idx ON cafe USING GIST (location);
 
 CREATE TABLE IF NOT EXISTS Staff
 (
-    StaffID  SERIAL PRIMARY KEY,
-    Name     text,
-    Email    text UNIQUE,
-    Password bytea,
-    EditedAt timestamp,
-    Photo    text,
-    IsOwner  boolean,
-    CafeID   integer,
-    Position text
+    StaffID        SERIAL PRIMARY KEY,
+    Name           text,
+    Email          text UNIQUE,
+    EmailConfirmed bool DEFAULT FALSE,
+    Password       bytea,
+    EditedAt       timestamp,
+    Photo          text,
+    IsOwner        boolean,
+    CafeID         integer,
+    Position       text
 );
 
 CREATE TABLE IF NOT EXISTS ApplePass
@@ -140,5 +141,6 @@ CREATE TABLE IF NOT EXISTS EmailConfirmation
 (
     SecretKey      uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     Email          text UNIQUE,
-    DateOfCreation timestamp        DEFAULT current_timestamp
+    DateOfCreation timestamp        DEFAULT current_timestamp,
+    IsRegistered   BOOL             DEFAULT FALSE
 )

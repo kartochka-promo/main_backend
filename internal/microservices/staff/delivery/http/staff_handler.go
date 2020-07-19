@@ -59,6 +59,8 @@ func NewStaffHandler(r *mux.Router, us staff.Usecase) {
 	r.HandleFunc("/api/v1/staff/logout", handler.Logout).Methods("POST")
 
 	r.HandleFunc("/api/v1/staff/new_email", handler.AddEmailToConfirm).Methods("POST")
+
+	r.HandleFunc("/api/v1/staff/confirm_email", handler.ConfirmEmail).Methods("POST")
 }
 
 func (s *StaffHandler) fetchStaff(r *http.Request) (models.Staff, error) {
@@ -89,12 +91,12 @@ func (s *StaffHandler) fetchStaff(r *http.Request) (models.Staff, error) {
 
 func (s *StaffHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	staffObj, err := s.fetchStaff(r)
-
+	secretKey := r.FormValue("secret_key")
 	if err != nil {
 		responses.SendSingleError(err.Error(), w)
 		return
 	}
-	safeStaff, err := s.SUsecase.Add(r.Context(), staffObj)
+	safeStaff, err := s.SUsecase.Register(r.Context(), staffObj, secretKey)
 	if err != nil {
 		responses.SendSingleError(err.Error(), w)
 		return
@@ -128,7 +130,7 @@ func (s *StaffHandler) AddStaffHandler(w http.ResponseWriter, r *http.Request) {
 	staffObj.IsOwner = false
 	staffObj.CafeId = CafeId
 	staffObj.Position = position
-	safeStaff, err := s.SUsecase.Add(r.Context(), staffObj)
+	safeStaff, err := s.SUsecase.Register(r.Context(), staffObj, "")
 
 	if err != nil {
 		responses.SendSingleError(err.Error(), w)
@@ -380,11 +382,44 @@ func (s *StaffHandler) AddEmailToConfirm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = s.SUsecase.SendEmailToConfirm(r.Context(), email)
+	err = s.SUsecase.SendRegisterEmail(r.Context(), email)
 	if err != nil {
 		responses.SendSingleError(err.Error(), w)
 		return
 	}
 
 	responses.SendOKAnswer("", w)
+}
+
+func fetchSecretKeyAndEmail(r *http.Request) (string, string, error) {
+	type secretKeyStruct struct {
+		SecretKey string `json:"secret_key"`
+		Email     string `json:"email"`
+	}
+	data, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
+	if err != nil || len(data) == 0 {
+		return "", "", err
+	}
+	var secretKey secretKeyStruct
+	err = json.Unmarshal(data, &secretKey)
+	if err != nil {
+		return "", "", err
+	}
+	return secretKey.Email, secretKey.SecretKey, nil
+}
+
+func (s *StaffHandler) ConfirmEmail(w http.ResponseWriter, r *http.Request) {
+	email, secretKey, err := fetchSecretKeyAndEmail(r)
+	if err != nil {
+		responses.SendSingleError(err.Error(), w)
+		return
+	}
+
+	err = s.SUsecase.ConfirmEmailToStaff(r.Context(), email, secretKey)
+	if err != nil {
+		responses.SendSingleError(err.Error(), w)
+		return
+	}
+	return
 }

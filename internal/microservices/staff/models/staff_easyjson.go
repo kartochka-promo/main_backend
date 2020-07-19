@@ -42,6 +42,8 @@ func easyjsonA0c9e1e4Decode20201DropTableInternalMicroservicesStaffModels(in *jl
 			out.Name = string(in.String())
 		case "email":
 			out.Email = string(in.String())
+		case "email_confirmed":
+			out.EmailConfirmed = bool(in.Bool())
 		case "password":
 			out.Password = string(in.String())
 		case "editedAt":
@@ -84,6 +86,11 @@ func easyjsonA0c9e1e4Encode20201DropTableInternalMicroservicesStaffModels(out *j
 		const prefix string = ",\"email\":"
 		out.RawString(prefix)
 		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"email_confirmed\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.EmailConfirmed))
 	}
 	{
 		const prefix string = ",\"password\":"
@@ -166,6 +173,8 @@ func easyjsonA0c9e1e4Decode20201DropTableInternalMicroservicesStaffModels1(in *j
 			out.Name = string(in.String())
 		case "email":
 			out.Email = string(in.String())
+		case "email_confirmed":
+			out.EmailConfirmed = bool(in.Bool())
 		case "editedAt":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.EditedAt).UnmarshalJSON(data))
@@ -206,6 +215,11 @@ func easyjsonA0c9e1e4Encode20201DropTableInternalMicroservicesStaffModels1(out *
 		const prefix string = ",\"email\":"
 		out.RawString(prefix)
 		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"email_confirmed\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.EmailConfirmed))
 	}
 	{
 		const prefix string = ",\"editedAt\":"

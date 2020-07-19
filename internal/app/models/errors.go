@@ -26,12 +26,14 @@ var (
 	ErrNoLoyaltyProgram = errors.New("no loyalty program with given name")
 
 	//Customer errors
-	ErrBadUuid     = errors.New("bad uuid")
-	ErrPointsError = errors.New("points can't be <0")
+	ErrBadUuid = errors.New("bad uuid")
 
 	//Auth errors
 	ErrUnauthorized = errors.New("incorrect password or email")
 
 	//Cafe errors
 	ErrCafeIsNotExist = errors.New("cafe with this id is not exist")
+
+	//Email errors
+	ErrNoEmailInDatabase = errors.New("email you trying to confirm doesn't existed")
 )

@@ -35,7 +35,7 @@ func (_m *Repository) Add(ctx context.Context, st models.Staff) (models.Staff, e
 	return r0, r1
 }
 
-// SendEmailToConfirm provides a mock function with given fields: ctx, email
+// SendRegisterEmail provides a mock function with given fields: ctx, email
 func (_m *Repository) AddEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error) {
 	ret := _m.Called(ctx, email)
 

@@ -22,28 +22,30 @@ func (p *PostgresStaffRepository) Add(ctx context.Context, st models.Staff) (mod
 	query := `INSERT into staff(
                   name, 
                   email, 
+                  emailconfirmed,
                   password,
                   editedat,
                   photo, 
                   isowner, 
                   cafeid, 
-                  position) 
-                  VALUES ($1,$2,$3,$4,$5,$6,$7,$8) 
-                  RETURNING StaffID, Name, Email, EditedAt, Photo, IsOwner, CafeId, Position`
+                  position)
+                  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) 
+                  RETURNING StaffID, Name, Email, EmailConfirmed, EditedAt, Photo, IsOwner, CafeId, Position`
 
 	var dbStaff models.Staff
 	hashedPassword, err := hasher.HashAndSalt(nil, st.Password)
 	if err != nil {
 		return dbStaff, err
 	}
-	err = p.conn.GetContext(ctx, &dbStaff, query, st.Name, st.Email, hashedPassword, st.EditedAt, st.Photo, st.IsOwner, st.CafeId, st.Position)
+	err = p.conn.GetContext(ctx, &dbStaff, query, st.Name, st.Email, st.EmailConfirmed,
+		hashedPassword, st.EditedAt, st.Photo, st.IsOwner, st.CafeId, st.Position)
 	return dbStaff, err
 }
 
 func (p *PostgresStaffRepository) GetByEmail(ctx context.Context,
 	email string) (models.Staff, error) {
 
-	query := `SELECT StaffID, Name, Email, EditedAt, Photo, IsOwner, CafeId, Position, Password FROM Staff WHERE email=$1`
+	query := `SELECT StaffID, Name, Email, EmailConfirmed, EditedAt, Photo, IsOwner, CafeId, Position, Password FROM Staff WHERE email=$1`
 
 	var dbStaff models.Staff
 	err := p.conn.GetContext(ctx, &dbStaff, query, email)
@@ -52,7 +54,7 @@ func (p *PostgresStaffRepository) GetByEmail(ctx context.Context,
 }
 
 func (p *PostgresStaffRepository) GetByID(ctx context.Context, id int) (models.Staff, error) {
-	query := `SELECT StaffID, Name, Email, EditedAt, Photo, IsOwner, CafeId, Position FROM Staff WHERE StaffID=$1`
+	query := `SELECT StaffID, Name, Email, EmailConfirmed, EditedAt, Photo, IsOwner, CafeId, Position FROM Staff WHERE StaffID=$1`
 
 	var dbStaff models.Staff
 	err := p.conn.GetContext(ctx, &dbStaff, query, id)
@@ -78,6 +80,14 @@ func (p *PostgresStaffRepository) Update(ctx context.Context, newStaff models.Sa
 		newStaff.Photo, newStaff.Position, newStaff.StaffID)
 
 	return dbStaff, err
+}
+
+func (p *PostgresStaffRepository) ConfirmEmail(ctx context.Context, email string) error {
+	query := `UPDATE Staff SET EmailConfirmed=$1 WHERE email=$2`
+
+	_, err := p.conn.ExecContext(ctx, query, true, email)
+
+	return err
 }
 
 func (p *PostgresStaffRepository) AddUuid(ctx context.Context, uuid string, id int) error {
@@ -151,13 +161,16 @@ func (p *PostgresStaffRepository) UpdatePosition(ctx context.Context, staffId in
 }
 
 func (p *PostgresStaffRepository) AddEmailToConfirm(ctx context.Context,
-	email string) (models.EmailConfirmationForm, error) {
+	email string, isRegistered bool) (models.EmailConfirmationForm, error) {
 
-	query := `INSERT INTO EmailConfirmation(Email) VALUES ($1) RETURNING SecretKey, Email, DateOfCreation`
+	query := `INSERT INTO EmailConfirmation(
+                              Email, 
+                              IsRegistered) VALUES ($1, $2) 
+                              RETURNING SecretKey, Email, DateOfCreation, IsRegistered`
 
 	var emailConfirmationForm models.EmailConfirmationForm
 
-	err := p.conn.GetContext(ctx, &emailConfirmationForm, query, email)
+	err := p.conn.GetContext(ctx, &emailConfirmationForm, query, email, isRegistered)
 	// Check if email is already in database
 	if errPQ, ok := err.(*pq.Error); ok && errPQ.Code.Name() == "unique_violation" {
 		emailConfirmationForm, err = p.GetEmailToConfirm(ctx, email)
@@ -169,7 +182,7 @@ func (p *PostgresStaffRepository) AddEmailToConfirm(ctx context.Context,
 func (p *PostgresStaffRepository) GetEmailToConfirm(ctx context.Context,
 	email string) (models.EmailConfirmationForm, error) {
 
-	query := `SELECT SecretKey, Email, DateOfCreation FROM EmailConfirmation WHERE Email=$1`
+	query := `SELECT SecretKey, Email, DateOfCreation, IsRegistered FROM EmailConfirmation WHERE Email=$1`
 
 	var emailConfirmationForm models.EmailConfirmationForm
 

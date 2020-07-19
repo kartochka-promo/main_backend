@@ -6,7 +6,7 @@ import (
 )
 
 type Usecase interface {
-	Add(c context.Context, newStaff models.Staff) (models.SafeStaff, error)
+	Register(c context.Context, newStaff models.Staff, emailSecretKey string) (models.SafeStaff, error)
 	GetByID(c context.Context, id int) (models.SafeStaff, error)
 	Update(c context.Context, newStaff models.SafeStaff) (models.SafeStaff, error)
 	GetByEmailAndPassword(c context.Context, form models.LoginForm) (models.SafeStaff, error)
@@ -20,5 +20,6 @@ type Usecase interface {
 	DeleteStaffById(ctx context.Context, staffId int) error
 	CheckIfStaffInOwnerCafes(ctx context.Context, requestUser models.SafeStaff, staffId int) (bool, error)
 	UpdatePosition(ctx context.Context, id int, position string) error
-	SendEmailToConfirm(ctx context.Context, email string) error
+	SendRegisterEmail(ctx context.Context, email string) error
+	ConfirmEmailToStaff(ctx context.Context, email, secretKey string) error
 }
