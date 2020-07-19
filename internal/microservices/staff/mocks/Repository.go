@@ -35,20 +35,20 @@ func (_m *Repository) Add(ctx context.Context, st models.Staff) (models.Staff, e
 	return r0, r1
 }
 
-// SendRegisterEmail provides a mock function with given fields: ctx, email
-func (_m *Repository) AddEmailToConfirm(ctx context.Context, email string) (models.EmailConfirmationForm, error) {
-	ret := _m.Called(ctx, email)
+// AddEmailToConfirm provides a mock function with given fields: ctx, email, isRegistered
+func (_m *Repository) AddEmailToConfirm(ctx context.Context, email string, isRegistered bool) (models.EmailConfirmationForm, error) {
+	ret := _m.Called(ctx, email, isRegistered)
 
 	var r0 models.EmailConfirmationForm
-	if rf, ok := ret.Get(0).(func(context.Context, string) models.EmailConfirmationForm); ok {
-		r0 = rf(ctx, email)
+	if rf, ok := ret.Get(0).(func(context.Context, string, bool) models.EmailConfirmationForm); ok {
+		r0 = rf(ctx, email, isRegistered)
 	} else {
 		r0 = ret.Get(0).(models.EmailConfirmationForm)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, email)
+	if rf, ok := ret.Get(1).(func(context.Context, string, bool) error); ok {
+		r1 = rf(ctx, email, isRegistered)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -89,6 +89,20 @@ func (_m *Repository) CheckIsOwner(ctx context.Context, staffId int) (bool, erro
 	}
 
 	return r0, r1
+}
+
+// ConfirmEmail provides a mock function with given fields: ctx, email
+func (_m *Repository) ConfirmEmail(ctx context.Context, email string) error {
+	ret := _m.Called(ctx, email)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // DeleteEmailToConfirm provides a mock function with given fields: ctx, email

@@ -14,41 +14,6 @@ type Usecase struct {
 	mock.Mock
 }
 
-// Add provides a mock function with given fields: c, newStaff
-func (_m *Usecase) Add(c context.Context, newStaff models.Staff) (models.SafeStaff, error) {
-	ret := _m.Called(c, newStaff)
-
-	var r0 models.SafeStaff
-	if rf, ok := ret.Get(0).(func(context.Context, models.Staff) models.SafeStaff); ok {
-		r0 = rf(c, newStaff)
-	} else {
-		r0 = ret.Get(0).(models.SafeStaff)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, models.Staff) error); ok {
-		r1 = rf(c, newStaff)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// SendRegisterEmail provides a mock function with given fields: ctx, email
-func (_m *Usecase) SendEmailToConfirm(ctx context.Context, email string) error {
-	ret := _m.Called(ctx, email)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
-		r0 = rf(ctx, email)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // CheckIfStaffInOwnerCafes provides a mock function with given fields: ctx, requestUser, staffId
 func (_m *Usecase) CheckIfStaffInOwnerCafes(ctx context.Context, requestUser models.SafeStaff, staffId int) (bool, error) {
 	ret := _m.Called(ctx, requestUser, staffId)
@@ -68,6 +33,20 @@ func (_m *Usecase) CheckIfStaffInOwnerCafes(ctx context.Context, requestUser mod
 	}
 
 	return r0, r1
+}
+
+// ConfirmEmailToStaff provides a mock function with given fields: ctx, email, secretKey
+func (_m *Usecase) ConfirmEmailToStaff(ctx context.Context, email string, secretKey string) error {
+	ret := _m.Called(ctx, email, secretKey)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(ctx, email, secretKey)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // DeleteQrCodes provides a mock function with given fields: uString
@@ -266,6 +245,41 @@ func (_m *Usecase) IsOwner(c context.Context, staffId int) (bool, error) {
 	}
 
 	return r0, r1
+}
+
+// Register provides a mock function with given fields: c, newStaff, emailSecretKey
+func (_m *Usecase) Register(c context.Context, newStaff models.Staff, emailSecretKey string) (models.SafeStaff, error) {
+	ret := _m.Called(c, newStaff, emailSecretKey)
+
+	var r0 models.SafeStaff
+	if rf, ok := ret.Get(0).(func(context.Context, models.Staff, string) models.SafeStaff); ok {
+		r0 = rf(c, newStaff, emailSecretKey)
+	} else {
+		r0 = ret.Get(0).(models.SafeStaff)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(context.Context, models.Staff, string) error); ok {
+		r1 = rf(c, newStaff, emailSecretKey)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// SendRegisterEmail provides a mock function with given fields: ctx, email
+func (_m *Usecase) SendRegisterEmail(ctx context.Context, email string) error {
+	ret := _m.Called(ctx, email)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, email)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // Update provides a mock function with given fields: c, newStaff
