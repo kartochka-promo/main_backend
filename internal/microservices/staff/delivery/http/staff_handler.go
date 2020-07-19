@@ -421,5 +421,4 @@ func (s *StaffHandler) ConfirmEmail(w http.ResponseWriter, r *http.Request) {
 		responses.SendSingleError(err.Error(), w)
 		return
 	}
-	return
 }
