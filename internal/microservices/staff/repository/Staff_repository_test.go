@@ -86,32 +86,32 @@ func TestAdd(t *testing.T) {
 
 }
 
-func TestGetByEmail(t *testing.T) {
-	con, err := getDataBase()
-	if err != nil {
-		t.Error(err)
-	}
-	resUser := models.Staff{
-		StaffID:  1,
-		Name:     "test",
-		Email:    "valid@valid.ru",
-		Password: "123",
-		EditedAt: time.Now().UTC(),
-		Photo:    "photo",
-		IsOwner:  true,
-		CafeId:   0,
-		Position: "position",
-	}
-	rep := repository.NewPostgresStaffRepository(con)
-	res, err := rep.GetByEmail(context.TODO(), "valid@valid.ru")
-	if err != nil {
-		t.Error(err)
-	}
-	assert.Nil(t, err)
-	assert.Equal(t, resUser.Email, res.Email)
-	assert.Equal(t, resUser.Password, res.Password)
-	res, _ = rep.GetByEmail(context.TODO(), "notexist")
-}
+//func TestGetByEmail(t *testing.T) {
+//	con, err := getDataBase()
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	resUser := models.Staff{
+//		StaffID:  1,
+//		Name:     "test",
+//		Email:    "valid@valid.ru",
+//		Password: "123",
+//		EditedAt: time.Now().UTC(),
+//		Photo:    "photo",
+//		IsOwner:  true,
+//		CafeId:   0,
+//		Position: "position",
+//	}
+//	rep := repository.NewPostgresStaffRepository(con)
+//	res, err := rep.GetByEmail(context.TODO(), "valid@valid.ru")
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	assert.Nil(t, err)
+//	assert.Equal(t, resUser.Email, res.Email)
+//	assert.Equal(t, resUser.Password, res.Password)
+//	res, _ = rep.GetByEmail(context.TODO(), "notexist")
+//}
 
 func TestGetById(t *testing.T) {
 	con, err := getDataBase()
