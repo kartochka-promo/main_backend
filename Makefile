@@ -47,7 +47,7 @@ run-dev:
 	make build-docker-dev
 	docker-compose -f docker-compose-dev.yml up --build --no-deps
 
-## test-coverage: get final code coverage
+## coverage: get final code coverage
 coverage:
 	go test -covermode=atomic -coverpkg=./... -coverprofile=cover ./...
 	cat cover | fgrep -v "mock" | fgrep -v "pb.go" | fgrep -v "easyjson" | fgrep -v "start.go" > cover2
