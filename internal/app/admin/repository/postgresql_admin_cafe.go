@@ -1,16 +1,19 @@
 package repository
 
 import (
-	"2020_1_drop_table/internal/app/admin/models"
-	"github.com/jackc/pgx"
 	"strconv"
+
+	"github.com/jackc/pgx"
+
+	"2020_1_drop_table/internal/app/admin/models"
+	"2020_1_drop_table/internal/app/cafe/repository"
 )
 
 type AdminCafeStorage struct {
 	dbPool *pgx.ConnPool
 }
 
-func (acs AdminCafeStorage) GetCafes(limit, offset int) (models.GetCafes, error) {
+func (acs *AdminCafeStorage) GetCafes(limit, offset int) (models.GetCafes, error) {
 	var (
 		getCafesResponse      models.GetCafes
 		getCafeStorageRequest = "SELECT CafeID, CafeName, Address, Description, StaffID, OpenTime, CloseTime, Photo, location_str" +
@@ -38,7 +41,7 @@ func (acs AdminCafeStorage) GetCafes(limit, offset int) (models.GetCafes, error)
 	return getCafesResponse, err
 }
 
-func (acs AdminCafeStorage) GetCafe(getCafeID int) (models.GetCafe, error) {
+func (acs *AdminCafeStorage) GetCafe(getCafeID int) (models.GetCafe, error) {
 	var (
 		getCafesResponse      models.GetCafe
 		getCafeStorageRequest = "SELECT CafeID, CafeName, Address, Description, StaffID, OpenTime, CloseTime, Photo, location_str" +
@@ -51,7 +54,7 @@ func (acs AdminCafeStorage) GetCafe(getCafeID int) (models.GetCafe, error) {
 	return getCafesResponse, err
 }
 
-func (acs AdminCafeStorage) UpdateCafe(updateCafeRequest *models.CreateOrUpdateCafe) error {
+func (acs *AdminCafeStorage) UpdateCafe(updateCafeRequest *models.CreateOrUpdateCafe) error {
 	var (
 		updateCafeStorageBodyRequest = "UPDATE Cafe SET "
 		updateCafeStorageTailRequest = " WHERE CafeID = $1;"
@@ -104,7 +107,29 @@ func (acs AdminCafeStorage) UpdateCafe(updateCafeRequest *models.CreateOrUpdateC
 	return err
 }
 
-func (acs AdminCafeStorage) DeleteCafe(deleteCafeID int) error {
+func (acs *AdminCafeStorage) CreateCafe(createCafeRequest *models.CreateOrUpdateCafe) error {
+	var (
+		err   error
+		query = `INSERT INTO Cafe(
+					CafeName, 
+					Address, 
+					Description, 
+					StaffID, 
+					OpenTime,
+					CloseTime, 
+					Photo,
+					location,
+					location_str) 
+					VALUES ($1,$2,$3,$4,$5,$6,$7,ST_GeomFromEWKT($8),$9)`
+	)
+	postGisPoint := repository.GeneratePointToGeoWithPoint(createCafeRequest.Location)
+	_, err = acs.dbPool.Exec(query, createCafeRequest.CafeName, createCafeRequest.Address,
+		createCafeRequest.Description, createCafeRequest.StaffID, createCafeRequest.OpenTime, createCafeRequest.CloseTime,
+		createCafeRequest.Photo, postGisPoint, createCafeRequest.Location)
+	return err
+}
+
+func (acs *AdminCafeStorage) DeleteCafe(deleteCafeID int) error {
 	var (
 		deleteCafeStorageRequest = "DELETE FROM Cafe WHERE CafeID = $1;"
 	)

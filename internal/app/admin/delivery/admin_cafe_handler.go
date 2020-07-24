@@ -79,6 +79,25 @@ func (acs AdminCafeService) UpdateCafe(rwContext echo.Context) error {
 	return rwContext.NoContent(http.StatusOK)
 }
 
+func (acs AdminCafeService) CreateCafe(rwContext echo.Context) error {
+	var (
+		err            error
+		updateCafeJson models.CreateOrUpdateCafe
+	)
+
+	if err = rwContext.Bind(&updateCafeJson); err != nil {
+		return rwContext.NoContent(http.StatusNotAcceptable)
+	}
+
+	if err = acs.cafeLogic.UpdateCafe(&updateCafeJson); err != nil {
+		return rwContext.JSON(http.StatusBadRequest, &responses.HttpError{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+	return rwContext.NoContent(http.StatusOK)
+}
+
 func (acs AdminCafeService) DeleteCafe(rwContext echo.Context) error {
 	var (
 		cafeID int

@@ -11,9 +11,11 @@ func (ams AdminMainService) Setup(server *echo.Echo) {
 	///* only updating admin password */
 	server.PUT("/api/v1/admin/update", ams.UpdateAdmin)
 }
+
 /* main admin operations with cafe */
 func (acs AdminCafeService) Setup(server *echo.Echo) {
 	/* Singe Cafe Methods */
+	server.POST("/api/v1/admin/database/cafe", acs.CreateCafe)
 	server.GET("/api/v1/admin/database/cafe/:cafeID", acs.GetCafe)
 	server.PUT("/api/v1/admin/database/cafe/:cafeID", acs.UpdateCafe)
 	server.DELETE("/api/v1/admin/database/cafe/:cafeID", acs.DeleteCafe)

@@ -10,7 +10,7 @@ type AdminCafeLogic struct {
 }
 
 func (acl *AdminCafeLogic) GetCafes(limit, offset int) (models.GetCafes, error) {
-	return acl.cafeStorage.GetCafes(limit,offset)
+	return acl.cafeStorage.GetCafes(limit, offset)
 }
 
 func (acl *AdminCafeLogic) GetCafe(getCafeID int) (models.GetCafe, error) {
@@ -21,6 +21,10 @@ func (acl *AdminCafeLogic) UpdateCafe(updateCafeRequest *models.CreateOrUpdateCa
 	return acl.cafeStorage.UpdateCafe(updateCafeRequest)
 }
 
-func (acl *AdminCafeLogic) DeleteCafe(deleteCafeID int) error{
+func (acl *AdminCafeLogic) DeleteCafe(deleteCafeID int) error {
 	return acl.cafeStorage.DeleteCafe(deleteCafeID)
+}
+
+func (acl *AdminCafeLogic) CreateCafe(createCafeRequest *models.CreateOrUpdateCafe) error {
+	return acl.cafeStorage.CreateCafe(createCafeRequest)
 }

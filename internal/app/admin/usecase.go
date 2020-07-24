@@ -14,5 +14,6 @@ type UseCaseCafe interface {
 	GetCafes(limit, offset int) (models.GetCafes, error)
 	GetCafe(getCafeID int) (models.GetCafe, error)
 	UpdateCafe(updateCafeRequest *models.CreateOrUpdateCafe) error
+	CreateCafe(createCafeRequest *models.CreateOrUpdateCafe) error
 	DeleteCafe(deleteCafeID int) error
 }
